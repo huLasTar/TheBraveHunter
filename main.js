@@ -1,10 +1,17 @@
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 
+const elemLeft = canvas.offsetLeft + canvas.clientLeft;
+const elemTop = canvas.offsetTop + canvas.clientTop;
+
+console.log(elemLeft);
+console.log(elemTop);
+
 canvas.width = 1024;
 canvas.height = 768;
 
 const bird = new Bird();
+const weapon = new Weapon();
 
 let lasttime = 0;
 let timetonextbird = 0;
@@ -39,26 +46,34 @@ function animate(timestamp) {
     birds = birds.filter(object => !object.deleteentity);
     // bird.update();
     // bird.draw();
-    console.log(birds);
+    //console.log(birds);
+    weapon.draw();
     requestAnimationFrame(animate);
 }
 animate(0);
 
 window.addEventListener('click', function (e) {
-    const detectpixelcolor = context.getImageData(e.x, e.y, 1, 1);
+    // const detectpixelcolor = context.getImageData(e.x, e.y, 1, 1);
     // console.log(detectpixelcolor);
-    const pixelcolor = detectpixelcolor.data;
+    // const pixelcolor = detectpixelcolor.data;
 
     birds.forEach(object => {
-        if (object.randomColors[0] === pixelcolor[0] && object.randomColors[1] === pixelcolor[1] && object.randomColors[2] === pixelcolor[2]) {
-            // console.log("hit");
-            score++;
+
+        const birdX = e.pageX - elemLeft;
+        const birdY = e.pageY - elemTop;
+        const killedBirds = [];
+    
+        console.log(birdX, birdY);
+        console.log(object.top);
+
+        if (birdY > object.top && birdY < object.top + object.height && birdX > object.left && birdX < object.left + object.width) {
+            console.log("hit");
+            // score++;
             // scorecount.innerHTML = score;
-            object.deleteentity = true;
+            // object.deleteentity = true;
         } else {
             console.log("no hit");
         }
-
     });
-});
+}, false);
 

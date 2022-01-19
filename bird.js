@@ -25,7 +25,6 @@ class Bird {
         }
 
         this.x -= this.directionX;
-        // this.x = 200;
         this.y += this.directionY;
         
         // if a bird reaches the left side of the canvas, the game is over:

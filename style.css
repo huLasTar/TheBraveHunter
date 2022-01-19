@@ -24,6 +24,17 @@ body {
     box-shadow: 0 0 50px #FFFFFF, -10px 0 80px #FF00FF, 10px 0 80px #00FFFF;
 }
 
+.collision-canvas {
+    cursor: crosshair;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+    opacity: 1;
+}
+
 .bird {
     position: absolute;
     background-image: url("./assets/bird.png");
@@ -33,4 +44,4 @@ body {
     transition: top 2s, left 2s;
     transition-timing-function: linear;
     background-repeat: no-repeat;
-  }
+}

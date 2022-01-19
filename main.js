@@ -1,33 +1,52 @@
+// Create the main canvas:
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
-
-const elemLeft = canvas.offsetLeft + canvas.clientLeft;
-const elemTop = canvas.offsetTop + canvas.clientTop;
-
-console.log(elemLeft);
-console.log(elemTop);
-
 canvas.width = 1024;
 canvas.height = 768;
 
-const bird = new Bird();
+// Create another canvas for collision detection:
+const collisionCanvas = document.getElementById('collisionCanvas');
+const collisionContext = collisionCanvas.getContext('2d');
+collisionCanvas.width = canvas.width;
+collisionCanvas.height = canvas.height;
+
+// Variables for mouse position on canvas:
+const bounding = canvas.getBoundingClientRect();
+const offsetX = bounding.left;
+const offsetY = bounding.top;
+
+// Initialize a variable for Weapon class:
 const weapon = new Weapon();
+
+// Initialize a variable for Bird class:
+const bird = new Bird();
+
+// Declare and preload an audio file for gunshots:
+const gunShot = new Audio("./assets/shotgun.wav");
+gunShot.preload = 'auto';
+gunShot.load();
+
+// Declare and preload an audio file for game over:
+const gameOverSound = new Audio("./assets/gameover.mp3");
+gameOverSound.preload = 'auto';
+gameOverSound.load();
 
 let lasttime = 0;
 let timetonextbird = 0;
 let birdgap = 1000;
 let birds = [];
+let ammo = 20;
 let score = 0;
 let gameover = false;
 
 function animate(timestamp) {
     context.clearRect(0, 0, canvas.width, canvas.height);
-    let timedifference = timestamp - lasttime;
+    collisionContext.clearRect(0, 0, canvas.width, canvas.height);
+    let timedifference = timestamp-lasttime;
     lasttime = timestamp;
-    // console.log(timedifference);
     timetonextbird += timedifference;
     if (timetonextbird > birdgap) {
-        if (birds.length < 5) {
+        if (birds.length < 8) {
             birds.push(new Bird());
         }
         timetonextbird = 0;
@@ -35,45 +54,71 @@ function animate(timestamp) {
             return bird1.width - bird2.width;
         })
     }
+    [...birds].forEach(object => object.update(timedifference));
+    [...birds].forEach(object => object.draw());
+
+    // Filter birds which are still alive:
+    birds = birds.filter(object => !object.killedBird);
     
-    for (let i = 0; i < birds.length; i++) {
-        birds[i].update(timedifference);
-        birds[i].draw();
-    }
-    
-    //[...birds].forEach(object => object.update(timedifference));
-    //[...birds].forEach(object => object.draw());
-    birds = birds.filter(object => !object.deleteentity);
-    // bird.update();
-    // bird.draw();
-    //console.log(birds);
+    // Show weapon
     weapon.draw();
-    requestAnimationFrame(animate);
+
+    // Show score
+	context.fillStyle = "black";
+	context.font = "30px Impact";
+	context.textAlign = "left";
+	context.textBaseline = "top";
+	context.fillText("BIRDS KILLED: " + score, 10, 10);
+
+    // Show ammo
+	context.fillStyle = "yellow";
+	context.font = "30px Impact";
+	context.textAlign = "right";
+	context.textBaseline = "bottom";
+	context.fillText("REMAINING AMMO: " + ammo, canvas.width-10, canvas.height-10);
+
+    if (!gameover && ammo > 0) {
+        requestAnimationFrame(animate);
+    } else {
+        stopGame();
+    }
 }
+
 animate(0);
 
+// Check if the player clicks with the mouse button:
 window.addEventListener('click', function (e) {
-    // const detectpixelcolor = context.getImageData(e.x, e.y, 1, 1);
-    // console.log(detectpixelcolor);
-    // const pixelcolor = detectpixelcolor.data;
-
-    birds.forEach(object => {
-
-        const birdX = e.pageX - elemLeft;
-        const birdY = e.pageY - elemTop;
-        const killedBirds = [];
     
-        console.log(birdX, birdY);
-        console.log(object.top);
+    // Get the real position of the mouse click on canvas:
+    const mouseX = e.clientX - offsetX;
+    const mouseY = e.clientY - offsetY;
+    
+    // Get hitbox color from collision canvas:
+    const detectPixelColor = collisionContext.getImageData(mouseX, mouseY, 1, 1);
+    const pixelColor = detectPixelColor.data;
 
-        if (birdY > object.top && birdY < object.top + object.height && birdX > object.left && birdX < object.left + object.width) {
+    // Check the hits on each birds
+    birds.forEach(object => {
+        if (object.randomColors[0] === pixelColor[0] && object.randomColors[1] === pixelColor[1] && object.randomColors[2] === pixelColor[2]) {
             console.log("hit");
-            // score++;
-            // scorecount.innerHTML = score;
-            // object.deleteentity = true;
+            gunShot.play();
+            object.killedBird = true;
+            ammo--;
+            score++;
         } else {
+            gunShot.play();
+            ammo--;
             console.log("no hit");
-        }
+        }  
     });
-}, false);
+});
 
+// Show the "Game Over" message when the game ends:
+function stopGame() {
+    context.font = "75px Impact";
+    context.textAlign = "center";
+    context.fillStyle = "red";
+    context.shadowColor = 'black';
+    context.shadowBlur = 15;
+    context.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+}

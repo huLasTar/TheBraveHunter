@@ -46,9 +46,9 @@ function animate(timestamp) {
     lasttime = timestamp;
     timetonextbird += timedifference;
     if (timetonextbird > birdgap) {
-        if (birds.length < 8) {
+        // if (birds.length < 8) {
             birds.push(new Bird());
-        }
+        // }
         timetonextbird = 0;
         birds.sort(function (bird1, bird2) {
             return bird1.width - bird2.width;

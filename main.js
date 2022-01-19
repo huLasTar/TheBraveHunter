@@ -77,7 +77,8 @@ function animate(timestamp) {
 	context.textBaseline = "bottom";
 	context.fillText("REMAINING AMMO: " + ammo, canvas.width-10, canvas.height-10);
 
-    if (!gameover && ammo > 0) {
+    // if (!gameover && ammo > 0) {
+    if (!gameover) {
         requestAnimationFrame(animate);
     } else {
         stopGame();

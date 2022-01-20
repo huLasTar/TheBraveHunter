@@ -77,8 +77,7 @@ function animate(timestamp) {
 	context.textBaseline = "bottom";
 	context.fillText("REMAINING AMMO: " + ammo, canvas.width-10, canvas.height-10);
 
-    // if (!gameover && ammo > 0) {
-    if (!gameover) {
+    if (!gameover && ammo > 0) {
         requestAnimationFrame(animate);
     } else {
         stopGame();
@@ -90,28 +89,30 @@ animate(0);
 // Check if the player clicks with the mouse button:
 window.addEventListener('click', function (e) {
     
-    // Get the real position of the mouse click on canvas:
+    ammo -= 1;
+
+    // Get the real position of the mouse click on the canvas:
     const mouseX = e.clientX - offsetX;
     const mouseY = e.clientY - offsetY;
     
-    // Get hitbox color from collision canvas:
+    // Get hitbox color from the collision canvas:
     const detectPixelColor = collisionContext.getImageData(mouseX, mouseY, 1, 1);
     const pixelColor = detectPixelColor.data;
 
-    // Check the hits on each birds
+    // Check the hits on each birds:
     birds.forEach(object => {
         if (object.randomColors[0] === pixelColor[0] && object.randomColors[1] === pixelColor[1] && object.randomColors[2] === pixelColor[2]) {
-            console.log("hit");
             gunShot.play();
             object.killedBird = true;
-            ammo--;
             score++;
         } else {
             gunShot.play();
-            ammo--;
-            console.log("no hit");
         }  
     });
+
+    if (score % 10 === 0) {
+        ammo += 5;
+    }
 });
 
 // Show the "Game Over" message when the game ends:

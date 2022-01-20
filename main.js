@@ -21,15 +21,21 @@ const weapon = new Weapon();
 // Initialize a variable for Bird class:
 const bird = new Bird();
 
-// Declare and preload an audio file for gunshots:
+// Declare and preload an audio file for gunfire:
+const forestSound = new Audio("./assets/forest.wav");
+forestSound.preload = 'auto';
+forestSound.loop = true;
+forestSound.load();
+
+// Declare and preload an audio file for gunfire:
 const gunShot = new Audio("./assets/shotgun.wav");
 gunShot.preload = 'auto';
 gunShot.load();
 
-// Declare and preload an audio file for game over:
-const gameOverSound = new Audio("./assets/gameover.mp3");
-gameOverSound.preload = 'auto';
-gameOverSound.load();
+// Declare and preload an audio file for the dry gunfire (no ammo):
+const noAmmo = new Audio("./assets/noammo.mp3");
+noAmmo.preload = 'auto';
+noAmmo.load();
 
 let lasttime = 0;
 let timetonextbird = 0;
@@ -46,12 +52,12 @@ function animate(timestamp) {
     lasttime = timestamp;
     timetonextbird += timedifference;
     if (timetonextbird > birdgap) {
-        if (birds.length < 8) {
+        // if (birds.length < 8) {
             birds.push(new Bird());
-        }
+        // }
         timetonextbird = 0;
         birds.sort(function (bird1, bird2) {
-            return bird1.width - bird2.width;
+            return bird1.width-bird2.width;
         })
     }
     [...birds].forEach(object => object.update(timedifference));
@@ -59,7 +65,7 @@ function animate(timestamp) {
 
     // Filter birds which are still alive:
     birds = birds.filter(object => !object.killedBird);
-    
+
     // Show weapon
     weapon.draw();
 
@@ -77,41 +83,55 @@ function animate(timestamp) {
 	context.textBaseline = "bottom";
 	context.fillText("REMAINING AMMO: " + ammo, canvas.width-10, canvas.height-10);
 
-    // if (!gameover && ammo > 0) {
     if (!gameover) {
         requestAnimationFrame(animate);
     } else {
+        ammo = 0;
         stopGame();
     }
 }
 
+// Start the game:
 animate(0);
 
 // Check if the player clicks with the mouse button:
 window.addEventListener('click', function (e) {
     
-    // Get the real position of the mouse click on canvas:
-    const mouseX = e.clientX - offsetX;
-    const mouseY = e.clientY - offsetY;
-    
-    // Get hitbox color from collision canvas:
-    const detectPixelColor = collisionContext.getImageData(mouseX, mouseY, 1, 1);
-    const pixelColor = detectPixelColor.data;
+    forestSound.play();
 
-    // Check the hits on each birds
-    birds.forEach(object => {
-        if (object.randomColors[0] === pixelColor[0] && object.randomColors[1] === pixelColor[1] && object.randomColors[2] === pixelColor[2]) {
-            console.log("hit");
-            gunShot.play();
-            object.killedBird = true;
-            ammo--;
-            score++;
-        } else {
-            gunShot.play();
-            ammo--;
-            console.log("no hit");
-        }  
-    });
+    if (ammo != 0) {
+        gunShot.play();
+        ammo -= 1;
+
+        // Get the real position of the mouse click on the canvas:
+        const mouseX = e.clientX - offsetX;
+        const mouseY = e.clientY - offsetY;
+    
+        // Get hitbox color from the collision canvas:
+        const detectPixelColor = collisionContext.getImageData(mouseX, mouseY, 1, 1);
+        const pixelColor = detectPixelColor.data;
+
+        // Check the hits on each birds:
+        birds.forEach(object => {
+            if (object.randomColors[0] === pixelColor[0] && object.randomColors[1] === pixelColor[1] && object.randomColors[2] === pixelColor[2]) {
+                object.killedBird = true;
+                score++;
+            }
+        });
+
+        // Get 10 bullets after every 9 killed birds:
+        if (score % 9 === 0 && score != 0) {
+            ammo += 10;
+        }
+
+        // Change difficulty level after every 50 killed birds:
+        if (score % 50 === 0 && birdgap >= 400) {
+            birdgap -= 100;
+        }
+
+    } else {
+        noAmmo.play();
+    }
 });
 
 // Show the "Game Over" message when the game ends:

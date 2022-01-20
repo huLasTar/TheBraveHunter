@@ -89,6 +89,7 @@ animate(0);
 // Check if the player clicks with the mouse button:
 window.addEventListener('click', function (e) {
     
+    gunShot.play();
     ammo -= 1;
 
     // Get the real position of the mouse click on the canvas:
@@ -102,16 +103,13 @@ window.addEventListener('click', function (e) {
     // Check the hits on each birds:
     birds.forEach(object => {
         if (object.randomColors[0] === pixelColor[0] && object.randomColors[1] === pixelColor[1] && object.randomColors[2] === pixelColor[2]) {
-            gunShot.play();
             object.killedBird = true;
             score++;
-        } else {
-            gunShot.play();
-        }  
+        }
     });
 
     if (score % 10 === 0) {
-        ammo += 5;
+        ammo += 10;
     }
 });
 

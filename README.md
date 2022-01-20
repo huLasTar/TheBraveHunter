@@ -2,7 +2,7 @@
 
 ### A similar game to Duck Hunt by László Tarnai
 
-A simple bird hunter game.
+A simple point-n-click first person shooter game.
 
 ## Requirements
 
@@ -10,4 +10,4 @@ An up-to-date web browser and a mouse.
 
 ## Instructions
 
-Use your mouse to hunt the birds, just click on the targets to shoot. If a bird flies out on the left, the game is over. When you start a new game you get 20 bullets as ammo. If you run out of ammo, you cannot hunt more birds, so you will lose the game.
+The player needs to use the mouse to hunt the birds with left click on the targets for shooting. If a bird flies out on the left, it will result in a game over. The player gets 20 bullets as ammo. If the player runs out of ammo, birds cannot be shot, so they will able to leave the danger zone.

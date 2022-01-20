@@ -10,4 +10,4 @@ An up-to-date web browser and a mouse.
 
 ## Instructions
 
-The player needs to use the mouse to hunt the birds with left click on the targets for shooting. If a bird flies out on the left, it will result in a game over. The player gets 20 bullets as ammo. If the player runs out of ammo, birds cannot be shot, so they will able to leave the danger zone.
+The player needs to use the mouse to hunt the birds with left click on the targets for shooting. If a bird flies out on the left, it will result in a game over. The player gets 20 bullets as ammo. If the player runs out of ammo, birds cannot be shot, so they will able to leave the danger zone. If the player earns 500 points, the game is won.

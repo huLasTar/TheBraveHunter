@@ -28,7 +28,7 @@ forestSound.loop = true;
 forestSound.load();
 
 // Declare and preload an audio file for gunfire:
-const gunShot = new Audio("./assets/shotgun.wav");
+const gunShot = new Audio("./assets/gunshot.mp3");
 gunShot.preload = 'auto';
 gunShot.load();
 
@@ -41,9 +41,11 @@ let lasttime = 0;
 let timetonextbird = 0;
 let birdgap = 1000;
 let birds = [];
+let shots = [];
 let ammo = 20;
 let score = 0;
 let gameover = false;
+let won = false;
 
 function animate(timestamp) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -60,11 +62,12 @@ function animate(timestamp) {
             return bird1.width-bird2.width;
         })
     }
-    [...birds].forEach(object => object.update(timedifference));
-    [...birds].forEach(object => object.draw());
+    [...birds, ...shots].forEach(object => object.update(timedifference));
+    [...birds, ...shots].forEach(object => object.draw());
 
     // Filter birds which are still alive:
     birds = birds.filter(object => !object.killedBird);
+    shots = shots.filter(object => !object.killedBird);
 
     // Show weapon
     weapon.draw();
@@ -83,9 +86,14 @@ function animate(timestamp) {
 	context.textBaseline = "bottom";
 	context.fillText("REMAINING AMMO: " + ammo, canvas.width-10, canvas.height-10);
 
-    if (!gameover) {
-        requestAnimationFrame(animate);
-    } else {
+    if (!gameover ) {
+        if (!won) {
+            requestAnimationFrame(animate);
+        } else {
+            cancelAnimationFrame(animate);
+            winGame();
+        }
+    } else { 
         ammo = 0;
         stopGame();
     }
@@ -100,7 +108,7 @@ window.addEventListener('click', function (e) {
     forestSound.play();
 
     if (ammo != 0) {
-        gunShot.play();
+        // gunShot.play();
         ammo -= 1;
 
         // Get the real position of the mouse click on the canvas:
@@ -116,6 +124,9 @@ window.addEventListener('click', function (e) {
             if (object.randomColors[0] === pixelColor[0] && object.randomColors[1] === pixelColor[1] && object.randomColors[2] === pixelColor[2]) {
                 object.killedBird = true;
                 score++;
+                shots.push(new Weapon());
+            } else {
+                gunShot.play();
             }
         });
 
@@ -127,6 +138,11 @@ window.addEventListener('click', function (e) {
         // Change difficulty level after every 50 killed birds:
         if (score % 50 === 0 && birdgap >= 400) {
             birdgap -= 100;
+        }
+
+        // If the player reaches 5000 points, the game is won:
+        if (score === 500) {
+            won = true;
         }
 
     } else {
@@ -142,4 +158,14 @@ function stopGame() {
     context.shadowColor = 'black';
     context.shadowBlur = 15;
     context.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+}
+
+// Show the "You win!" message when the game ends:
+function winGame() {
+    context.font = "75px Impact";
+    context.textAlign = "center";
+    context.fillStyle = "white";
+    context.shadowColor = 'black';
+    context.shadowBlur = 15;
+    context.fillText("YOU WIN!", canvas.width/2, canvas.height/2);
 }

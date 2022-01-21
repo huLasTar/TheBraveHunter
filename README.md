@@ -1,10 +1,12 @@
-![The Brave Hunter](screenshot.png?raw=true)
+![The Brave Hunter](icon.png?raw=true)
 
 # The Brave Hunter
 
 ### A similar game to Duck Hunt by László Tarnai
 
 A simple point-n-click first person shooter game.
+
+![The Brave Hunter](screenshot.png?raw=true)
 
 ## Requirements
 

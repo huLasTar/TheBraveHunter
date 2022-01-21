@@ -1,4 +1,6 @@
+<div style="float:right;">
 ![The Brave Hunter](icon.png?raw=true)
+</div>
 
 # The Brave Hunter
 
